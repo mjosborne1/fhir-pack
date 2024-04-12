@@ -1,4 +1,4 @@
-# How to build the environment for this script
+### How to build the environment for this script
    *  In your development/scripts folder 
    * `git clone https://github.com/mjosborne1/fhir-pack`
    * `cd fhir-pack`
@@ -10,13 +10,13 @@
    * in the root folder of fhir-pack create a new file `.env`
 
 
-## Get your client credentials for NCTS
+### Get your client credentials for NCTS
    1. Log into https://www.healthterminologies.gov.au/
    1. Click on `Clients`
    1. If you have system client credentials, copy these to the .env file in the root fhir-pack folder
    ![image](env-file.png ".env")
 
-## run the script
+### Run the script
    * open a cmd prompt in the fhir-pack folder
    * `python main.py`
    * Some defaults are set that may not work for you so check the arguments by running `python main.py --help`
@@ -39,6 +39,18 @@ optional arguments:
 
 Examples:
 On windows: 
-   `python main.py -o "C:\DATA\npm"  -t "C:\TEMP\fhir-pack" -p "healthterminologies.gov.au" -v "4.0.1" -r "20240331"`
+```
+python main.py -o "C:\DATA\npm"  -t "C:\TEMP\fhir-pack" -p "healthterminologies.gov.au" -v "4.0.1" -r "20240331"
+```
+
 On Mac / Linux:
-   `python main.py -o "~/data/npm" -t "/tmp/fhir-pack" -p "healthterminologies.gov.au" -v "4.0.1" -r "20240331"`
+```
+python main.py -o "~/data/npm" -t "/tmp/fhir-pack" -p "healthterminologies.gov.au" -v "4.0.1" -r "20240331"
+```
+
+### Output - Node Modules
+Creates a folder structure in outdir
+ *  Level 1: healthterminologies.gov.au@4.0.1
+ *  Level 2: node_modules/  package.json ( dependencies: "healthterminologies.gov.au" )
+ *  Level 3: inside node_modules/ a folder called "healthterminologies.gov.au"
+ *  Level 4: inside healthterminologies.gov.au/ go all the resources in json files
