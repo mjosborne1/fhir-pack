@@ -7,6 +7,7 @@ from oauthlib.oauth2 import BackendApplicationClient
 from requests_oauthlib import OAuth2Session
 from requests.auth import HTTPBasicAuth
 import json
+import re
 
 import os, shutil
 
@@ -48,13 +49,19 @@ parser.add_argument("-o", "--outdir", help="ouput root dir for npm packages", de
 parser.add_argument("-t", "--tmpdir", help="tmp dir for downloaded bundles", default=os.path.join(homedir,"data","ncts-npm"))
 parser.add_argument("-p", "--package_name", help="npm package name and version", default="healthterminologies.gov.au")
 parser.add_argument("-v", "--package_version", help="npm package name and version", default="1.0.0")
-parser.add_argument("-r", "--release", help="release version", default="20240331")
+parser.add_argument("-r", "--release", help="release version", default="current")
 
 
 args = parser.parse_args()
+# Check that the release version is a datestamp or the word current
+datepart= r"(\d{8})$"
+match = re.search(datepart,args.release)
+if args.release != "current" and not match:
+   print("--release must be either the word current or an 8 digit datestamp e.g. 20240331")
+   exit
 
 # Create Raw XML file
-rawxmlfile=os.path.join(args.outdir,"raw.xml")
+rawxmlfile=os.path.join(args.tmpdir,"raw.xml")
 node_folder = build_npm_folder_structure(args)
 
 # Load client secrets from .env
@@ -87,12 +94,31 @@ x1.close()
 feed = feedparser.parse(result.stdout)
 
 print('Entries: ',len(feed.entries))
+bundle_filename = res_bundle_file = ""
+datepart= r"(\d{8})$"
+most_recent_datestamp=None
 for entry in feed.entries:
+   #print('Feed entry:',entry.links[0].type,' from href:',entry.links[0].href,"basename:",entry.links[0].href.split("/")[-1])
    if entry.links[0].type == "application/fhir+json":
-      #print('Downloading type',entry.links[0].type,'from href:',entry.links[0].href)
-      if entry.links[0].href.find(f'fhir-resource-bundle-r4-{args.release}') != -1:
-         outfile=os.path.join(args.outdir,os.path.basename(entry.links[0].href))
-         print("outfile: %s\n" % outfile)
-         fetcher.write_json_data(entry.links[0].href,token, outfile)
-         fetcher.unbundle(args,node_folder,outfile)
+      datestamp=""
+      if entry.links[0].href.find(f'fhir-resource-bundle-r4') != -1:
+         basefilename = entry.links[0].href.split("/")[-1].split(".")[0]         
+         match = re.search(datepart,basefilename)
+         if match:            
+            datestamp= match.group(1)
+         if args.release == "current":
+            if datestamp and (most_recent_datestamp is None or datestamp > most_recent_datestamp):
+               most_recent_datestamp = datestamp
+               href=entry.links[0].href
+               bundle_filename = href.split("/")[-1]              
+         elif args.release == datestamp:
+            href=entry.links[0].href                 
+            bundle_filename=href.split("/")[-1]  
+            break
+
+if bundle_filename != "":
+   print(f"Bundle file is {bundle_filename}")
+   res_bundle_file=os.path.join(args.tmpdir,bundle_filename)
+   fetcher.write_json_data(href, token, res_bundle_file)
+   fetcher.unbundle(args,node_folder,res_bundle_file)
    

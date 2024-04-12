@@ -30,6 +30,6 @@ def unbundle(args,node_folder,file):
             # Create a file for each resource in the bundle named after the resource type and the ID
             with open(resource_file, 'w') as output_file:
                 json.dump(resource.as_json(), output_file, indent=2)
-                print(f"Created file for {resource_type} with ID {resource_name}")
+                #print(f"Created file for {resource_type} with ID {resource_name}")
 
    
