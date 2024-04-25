@@ -48,8 +48,9 @@ parser = argparse.ArgumentParser()
 parser.add_argument("-o", "--outdir", help="ouput root dir for npm packages", default=os.path.join(homedir,"data","npm"))
 parser.add_argument("-t", "--tmpdir", help="tmp dir for downloaded bundles", default=os.path.join(homedir,"data","ncts-npm"))
 parser.add_argument("-p", "--package_name", help="npm package name and version", default="healthterminologies.gov.au")
-parser.add_argument("-v", "--package_version", help="npm package name and version", default="1.0.0")
+parser.add_argument("-v", "--package_version", help="npm package name and version", default="4.0.1")
 parser.add_argument("-r", "--release", help="release version", default="current")
+parser.add_argument("-s", "--size", help="ValueSet expansion page size", default="40000")
 
 
 args = parser.parse_args()
@@ -72,6 +73,7 @@ oauth_endpoint=os.getenv("OAUTH_ENDPOINT")
 oauth_scope=os.getenv("OAUTH_SCOPE")
 oauth_strategy=os.getenv("OAUTH_STRATEGY")
 token_endpoint=os.getenv("TOKEN_ENDPOINT")
+api_endpoint=os.getenv("API_ENDPOINT")
 
 # Fetch an access token for NCTS
 auth = HTTPBasicAuth(client_id, client_secret)
@@ -119,6 +121,6 @@ for entry in feed.entries:
 if bundle_filename != "":
    print(f"Bundle file is {bundle_filename}")
    res_bundle_file=os.path.join(args.tmpdir,bundle_filename)
-   fetcher.write_json_data(href, token, res_bundle_file)
-   fetcher.unbundle(args,node_folder,res_bundle_file)
+   fetcher.write_bundle_data(href, token, res_bundle_file)
+   fetcher.unbundle(api_endpoint,node_folder,args.size,res_bundle_file)
    
