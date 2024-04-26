@@ -1,6 +1,7 @@
 import subprocess
 import argparse
 import fetcher
+import igparser
 import feedparser
 from dotenv import load_dotenv
 from oauthlib.oauth2 import BackendApplicationClient
@@ -93,6 +94,7 @@ with open(rawxmlfile, 'wb') as x1:
     x1.write(result.stdout)
 x1.close()
 
+ncts_vs = igparser.get_ig_vs()
 feed = feedparser.parse(result.stdout)
 
 print('Entries: ',len(feed.entries))
@@ -122,5 +124,5 @@ if bundle_filename != "":
    print(f"Bundle file is {bundle_filename}")
    res_bundle_file=os.path.join(args.tmpdir,bundle_filename)
    fetcher.write_bundle_data(href, token, res_bundle_file)
-   fetcher.unbundle(api_endpoint,node_folder,args.size,res_bundle_file)
+   fetcher.unbundle(api_endpoint,node_folder,args.size,res_bundle_file,ncts_vs)
    

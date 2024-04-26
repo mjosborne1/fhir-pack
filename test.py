@@ -3,6 +3,7 @@ import json
 import urllib
 import unittest
 import fetcher
+import igparser
 from fhirclient.models import valueset as vs
 from fhirpathpy import evaluate
 
@@ -49,3 +50,20 @@ class TestFetcher(unittest.TestCase):
         resource_file_stem = os.path.join(npm_dir,f"{resource_type}_{resource_name}_{resource_version}")
         result =  fetcher.expand_values(endpoint, vs_url, max_values, resource_file_stem)
         self.assertIn("Created file for ", result)
+
+class TestIgParser(unittest.TestCase):
+    def test_ncts_vs_key_exists(self):
+        """
+        Test that a particular vs is in the keys of the returned dict
+        """
+        vs_url="https://healthterminologies.gov.au/fhir/ValueSet/procedure-1"
+        value_sets_dict = igparser.get_ig_vs()
+        self.assertIn(vs_url,value_sets_dict)
+
+    def test_ncts_vs_key_not_in_vs(self):
+        """
+        Test that a particular vs is NOT in the keys of the returned dict
+        """
+        vs_url="https://www.abc.se"
+        value_sets_dict = igparser.get_ig_vs()
+        self.assertNotIn(vs_url,value_sets_dict)

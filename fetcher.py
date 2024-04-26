@@ -86,7 +86,7 @@ def expand_values(endpoint, vs_url, max_values, resource_file_stem):
     return result
         
 
-def unbundle(endpoint,node_folder,max_values,file):
+def unbundle(endpoint,node_folder,max_values,file,ncts_vs):
     """
     Unbundle a bundled resource and expand any contents within
     """
@@ -104,8 +104,7 @@ def unbundle(endpoint,node_folder,max_values,file):
             # Create a file for each expanded resource in the bundle named after the resource type and the ID
             if resource_type == "ValueSet":
                 vs_url = resource.url
-                if vs_url != None:
+                if vs_url != None and (vs_url in ncts_vs):
                     expand_values(endpoint,vs_url,max_values,resource_file_stem)
-                else:
-                    print(f'ERROR: expected a ValueSet name for resource: {resource_name}')
+               
  
