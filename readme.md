@@ -16,6 +16,25 @@
    1. If you have system client credentials, copy / paste these to the ```.env``` file in the root fhir-pack folder
    ![image](env-file.png ".env")
 
+### Download the FHIR IG Packages
+  * these packages are referenced so that only the bound ValueSets and CCodeSystems of interest are downloaded.
+  1. download AU Base, AU Core, AU eREquesting and AU Provider Directory to os.environ['HOME']/data/npm/{the package} e.g. hl7.fhir.au.base@4.2.0-preview/node_modules  
+  e.g.
+  ```
+  cd ~/data/npm
+  npm --registry https://packages.simplifier.net install hl7.fhir.au.core@0.3.0-ballot
+  ```
+  1. change the ig.json config to point at those locations
+  ```
+   {
+        "name" : "hl7.fhir.au.base",
+        "version" : "4.2.0-preview",
+        "title" : "AU Base Implementation Guide",
+        "folder" : "/Users/YOUR-USER-ID/data/npm/hl7.fhir.au.base@4.2.0-preview/node_modules"
+    },
+  ```
+  * Improvement required - auto download of fhir npm packages. I have downloaded AU Base to os.environ['HOME']/data/npm/hl7.fhir.au.base@4.2.0-preview/node_modules and AU Core to os.environ['HOME']/data/npm/hl7.fhir.au.core@0.3.0-ballot/node_modules
+
 ### Run the script
    * open a cmd prompt in the fhir-pack folder
    * `python main.py`
