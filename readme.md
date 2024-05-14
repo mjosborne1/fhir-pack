@@ -17,14 +17,14 @@
    ![image](env-file.png ".env")
 
 ### Download the FHIR IG Packages
-  * these packages are referenced so that only the bound ValueSets and CCodeSystems of interest are downloaded.
-  1. download AU Base, AU Core, AU eREquesting and AU Provider Directory to os.environ['HOME']/data/npm/{the package} e.g. hl7.fhir.au.base@4.2.0-preview/node_modules  
+  * these packages are referenced so that only the bound ValueSets and CodeSystems of interest are downloaded.
+  * download AU Base, AU Core, AU eREquesting and AU Provider Directory to os.environ['HOME']/data/npm/{the package} e.g. hl7.fhir.au.base@4.2.0-preview/node_modules  
   e.g.
   ```
   cd ~/data/npm
   npm --registry https://packages.simplifier.net install hl7.fhir.au.core@0.3.0-ballot
   ```
-  1. change the ig.json config to point at those locations
+  * change the ig.json config to point at those locations
   ```
    {
         "name" : "hl7.fhir.au.base",
