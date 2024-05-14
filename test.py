@@ -17,7 +17,6 @@ def create_test_folder():
     os.makedirs(npm_dir) 
     return npm_dir
 
-vs2="https://healthterminologies.gov.au/fhir/ValueSet/reason-vaccine-not-administered-3"
 
 class TestFetcher(unittest.TestCase):    
 
