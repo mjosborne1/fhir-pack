@@ -9,9 +9,8 @@ from requests_oauthlib import OAuth2Session
 from requests.auth import HTTPBasicAuth
 import json
 import re
-
+import logging
 import os, shutil
-
 
 # Create the npm file structure and required support files
 def build_npm_folder_structure(args):
@@ -75,6 +74,11 @@ oauth_scope=os.getenv("OAUTH_SCOPE")
 oauth_strategy=os.getenv("OAUTH_STRATEGY")
 token_endpoint=os.getenv("TOKEN_ENDPOINT")
 api_endpoint=os.getenv("API_ENDPOINT")
+logfile_name=os.getenv("LOGFILENAME")
+
+logger = logging.getLogger(__name__)
+logging.basicConfig(filename=logfile_name, level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logger.info('Logs started')
 
 # Fetch an access token for NCTS
 auth = HTTPBasicAuth(client_id, client_secret)
@@ -83,8 +87,10 @@ oauth = OAuth2Session(client=client)
 try:
    token = oauth.fetch_token(token_url=token_endpoint, auth=auth)
    print('Token was retreived successfully')
+   logger.info('Token was retreived successfully')
 except Exception as e:
    print('Failed to retrieve token!')
+   logger.error(f'Failed to retrieve token from: {token_endpoint}')
    exit
 
 # Now we have the token access the syndication feed using curl
@@ -96,8 +102,12 @@ x1.close()
 
 ncts_vs = igparser.get_ig_vs()
 feed = feedparser.parse(result.stdout)
-
-print('Entries: ',len(feed.entries))
+if feed.entries == 0:
+   logger.error('Nothing in the feed.')
+   exit
+entry_count = len(feed.entries)
+print(f'Entries: {entry_count}')
+logger.info(f'Entries: {entry_count}')
 bundle_filename = res_bundle_file = ""
 datepart= r"(\d{8})$"
 most_recent_datestamp=None
@@ -121,8 +131,11 @@ for entry in feed.entries:
             break
 
 if bundle_filename != "":
-   print(f"Bundle file is {bundle_filename}")
+   logger.info(f"Bundle file is {bundle_filename}")
    res_bundle_file=os.path.join(args.tmpdir,bundle_filename)
    fetcher.write_bundle_data(href, token, res_bundle_file)
    fetcher.unbundle(api_endpoint,node_folder,args.size,res_bundle_file,ncts_vs)
+
+logger.info('Completed')
+logger.info('Logs finished')
    

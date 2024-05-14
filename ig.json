@@ -15,6 +15,6 @@
         "name": "hl7.fhir.au.pd@2.0.1",
         "version": "hl7.fhir.au.pd@2.0.1",
         "title": "AU Provider Directory IG",
-        "folder": "/Users/osb074/data/npm/hl7.fhir.au.pd@2.0.1"
+        "folder": "/Users/osb074/data/npm/hl7.fhir.au.pd@2.0.1/node_modules"
     }      
 ]

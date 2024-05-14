@@ -8,7 +8,9 @@ import fhirclient.models.bundle as bundle
 import fhirclient.models.codesystem as cs
 import fhirclient.models.valueset as vs
 import fhirclient.models.conceptmap as cm
+import logging
 
+logger = logging.getLogger(__name__)
 
 def write_bundle_data(endpoint, token, outfile):
     """
@@ -33,14 +35,13 @@ def count_valueset(vs_endpoint, valueset_url):
     query=vsexp+urllib.parse.quote(valueset_url,safe='')
     query = f"{query}&count=1"
     command = ['curl', '-H "Accept: application/fhir+json" ' , '--location', query]
-    print("--------------------------------------------")
-    print(command)
+    
     result = subprocess.run(command, capture_output=True)
     data =  json.loads(result.stdout)
     try:
       total_list = evaluate(data,"expansion.total")
     except Exception as e:
-        print(f'Failed to retrieve total for ValueSet: {e}')
+        logger.error(f'Failed to retrieve total for ValueSet: {e}')
         return -1
     total=-1
     if len(total_list) != 0:
@@ -66,6 +67,7 @@ def expand_values(endpoint, vs_url, max_values, resource_file_stem):
     For ValueSets > 50K, create smaller files and indicate the offset in the filename
     Otherwise, just create the json file as per the valueset name passed from main
     """
+    result = ""
     total = count_valueset(endpoint, vs_url)
     if total < 0:       
         return f"ERROR: Unable to expand vs: {vs_url} against server: {endpoint}"
@@ -84,13 +86,13 @@ def expand_values(endpoint, vs_url, max_values, resource_file_stem):
         vs_endpoint = f"{vs_endpoint}&{params}"
         result = expand_valueset(vs_endpoint,offset,resource_file_stem)
     return result
-        
+
 
 def unbundle(endpoint,node_folder,max_values,file,ncts_vs):
     """
     Unbundle a bundled resource and expand any contents within
     """
-    print(f"Unbundling {file}")
+    logger.info(f"Unbundling {file}")
     with open(file, 'r') as f:
         data = json.load(f)
         bundle_entry = bundle.Bundle(data)
@@ -105,6 +107,17 @@ def unbundle(endpoint,node_folder,max_values,file,ncts_vs):
             if resource_type == "ValueSet":
                 vs_url = resource.url
                 if vs_url != None and (vs_url in ncts_vs):
-                    expand_values(endpoint,vs_url,max_values,resource_file_stem)
-               
+                    result = expand_values(endpoint,vs_url,max_values,resource_file_stem)
+                    logger.info(result)
+            elif resource_type == "CodeSystem":
+                logger.info(f"...writing CodeSystem: {resource.url}")
+                #CodeSystems are complete in the bundle so simply write to file
+                code_system_file = f'{resource_file_stem}.json'
+                with open(code_system_file, "w") as f:
+                    json.dump(resource.as_json(), f, indent=2)
+            elif resource_type == "ConceptMap":
+                logger.info(f"...writing ConceptMap: {resource.url}")
+                concept_map_file = f'{resource_file_stem}.json'
+                with open(concept_map_file, "w") as f:
+                    json.dump(resource.as_json(), f, indent=2)
  

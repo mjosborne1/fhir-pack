@@ -1,7 +1,9 @@
 import os
 import json
 from fhirpathpy import evaluate
+import logging
 
+logger = logging.getLogger(__name__)
 
 def process_binding(category,ig_name,profile,value_set_dict):
     with open(profile) as f:
@@ -49,8 +51,8 @@ def process_ig(ig,value_sets):
 
 
 # Improvement - download a fhir npm package froma repo first, but to get this going 
-# I have downloaded AU Base to /Users/osb074/data/npm/hl7.fhir.au.base@4.2.0-preview/node_modules
-# and AU Core to /Users/osb074/data/npm/hl7.fhir.au.core@0.3.0-ballot/node_modules
+# I have downloaded AU Base to os.environ['HOME']/data/npm/hl7.fhir.au.base@4.2.0-preview/node_modules
+# and AU Core to os.environ['HOME']/data/npm/hl7.fhir.au.core@0.3.0-ballot/node_modules
 
 def get_ig_vs():
     """
@@ -61,7 +63,7 @@ def get_ig_vs():
         igs = json.load(config_file)
     value_sets = {}
     for ig in igs:
-        print("Processing {0}".format(ig['name']))
+        logger.info("Processing {0}".format(ig['name']))
         value_sets = process_ig(ig,value_sets)
    
     return value_sets
