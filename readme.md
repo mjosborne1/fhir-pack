@@ -2,10 +2,11 @@
    *  In your development/scripts folder 
    * ```git clone https://github.com/mjosborne1/fhir-pack```
    * ```cd fhir-pack```
-   * ```pip install -r requirements.txt```
-   * ```pip install fhirclient```   (In case it doesn't install from the requirements file)
    * ```virtualenv env```
    * ```source env/bin/activate```
+   * ```pip install -r requirements.txt```
+   * ```pip install fhirclient```   (In case it doesn't install from the requirements file)
+
    * open the fhirpack folder in your development environment (IDE) of choice e.g. VS Code 
    * in the root folder of fhir-pack , copy or rename .env-example to a new file called ```.env```
 
@@ -22,7 +23,7 @@
   e.g.
   ```
   cd ~/data/npm
-  npm --registry https://packages.simplifier.net install hl7.fhir.au.core@0.3.0-ballot
+  npm --registry https://packages.simplifier.net install hl7.fhir.au.base@4.2.0-preview
   ```
   * change the ig.json config to point at those locations
   ```
@@ -31,7 +32,7 @@
         "version" : "4.2.0-preview",
         "title" : "AU Base Implementation Guide",
         "folder" : "/Users/YOUR-USER-ID/data/npm/hl7.fhir.au.base@4.2.0-preview/node_modules"
-    },
+    }, ...
   ```
   * Improvement required - auto download of fhir npm packages. I have downloaded AU Base to os.environ['HOME']/data/npm/hl7.fhir.au.base@4.2.0-preview/node_modules and AU Core to os.environ['HOME']/data/npm/hl7.fhir.au.core@0.3.0-ballot/node_modules
 
